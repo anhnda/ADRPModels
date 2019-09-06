@@ -1,5 +1,5 @@
 # A comparison of machine learning models in adverse drug side effect prediction
-Duc Anh Nguyen, Canh Hao Nguyen and Hiroshi Mamitsuka1
+Duc Anh Nguyen, Canh Hao Nguyen and Hiroshi Mamitsuka
 ## Usage:
 
 Create and activate a python environment using anaconda:
