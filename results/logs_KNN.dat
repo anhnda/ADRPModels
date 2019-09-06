@@ -1,4 +1,0 @@
-K-Fold data folder: ./data/kfolds_ec_liu
-K-Fold data folder: ./data/kfolds_ec_liu
-Model: KNN
-Format: AUC STDERR AUPR STDERR
