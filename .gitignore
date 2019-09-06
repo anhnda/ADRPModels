@@ -1,4 +1,5 @@
 *.pyc
+.idea
 train_*
 test_*
 __pycache__/*

@@ -1,6 +1,7 @@
-for i in "SVM"
-    do
-        echo $i
-        python main.py $i
+Data=Liu
+for m in "SVM"
+  do
+        echo $m
+        python main.py -m $m -d $Data
 	done
 

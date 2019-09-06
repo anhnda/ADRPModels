@@ -1,6 +1,7 @@
-for i in "CNN"
-    do
-        echo $i
-        python main.py $i
+Data=Liu
+for m in "CNN"
+  do
+        echo $m
+        python main.py -m $m -d $Data
 	done
 

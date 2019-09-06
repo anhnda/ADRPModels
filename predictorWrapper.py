@@ -1,4 +1,4 @@
-from DataFactory import DataLoader, DataLoader2
+#from DataFactory import DataLoader, DataLoader2
 import const
 from sklearn.metrics import roc_auc_score, auc, roc_curve, average_precision_score
 import numpy as np
@@ -8,7 +8,8 @@ class PredictorWrapper():
 
     def __init__(self, model=None):
         # self.dataLoader = DataLoader()
-        self.loader2 = DataLoader2()
+        # self.loader2 = DataLoader2()
+        pass
 
     def __getMeanSE(self, ar):
         mean = np.mean(ar)
