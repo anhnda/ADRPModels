@@ -1,0 +1,51 @@
+DATA_FOLDER = "./data"
+SCCA_RE_DIR = "./data/kfolds"
+
+# DATA_PATH = "%s/random_group_cv_data.indication"%DATA_FOLDER
+# KFOLD_FOLDER = "%s/kfolds"%DATA_FOLDER
+
+LIU_DATA_ECFP_FOLDER = "%s/Liu_Data" % DATA_FOLDER
+AEOLUS_ROOT_DATA = "%s/AEOLUS_Data" % DATA_FOLDER
+
+KFOLD_FOLDER_EC_Liu = "%s/kfolds_ec_liu" % DATA_FOLDER
+KFOLD_FOLDER_EC_AEOLUS = "%s/kfolds_ec_aeolus" % DATA_FOLDER
+
+ECFP_ADR_PATH = "%s/ECFPLiuData.dat" % LIU_DATA_ECFP_FOLDER
+ECFP_FEATURE_PATH = "%s/ECFPFeature.dat" % LIU_DATA_ECFP_FOLDER
+ECFP_INFO = "%s/ECFP.info" % LIU_DATA_ECFP_FOLDER
+
+
+AEOLUS_ADR_PATH = "%s/AEOLUS_FinalDrugADR.tsv" % AEOLUS_ROOT_DATA
+AEOLUS_CHEM_PATH = "%s/drugCidInfo.dat_Fix" % AEOLUS_ROOT_DATA
+AEOLUS_ECFP_PATH = "%s/AEOUS_Feature.dat" % AEOLUS_ROOT_DATA
+AEOLUS_INFO = "%s/AEOLUS_ECFP.info" % AEOLUS_ROOT_DATA
+
+#DATA_ROOT_2 = "/home/anhnd/DTI Project/Codes/BioDataLoader/out/data"
+
+KFOLD = 10
+TRAIN_PREFIX = "train_"
+TEST_PREFIX = "test_"
+
+TRAIN_PREFIX_EC = "train_ec_"
+TEST_PREFIX_EC = "test_ec_"
+
+INPUT_SIZE = 881
+KNN = 10
+RF = 10
+CCA = 50
+NeuN_H1 = 300
+NeuIter = 150
+LEARNING_RATE = 0.005
+SVM_C = 1
+N_FEATURE = 20
+
+CH_NUM_1 = 100
+CH_NUM_2 = 80
+CH_NUM_3 = 80
+CH_NUM_4 = 60
+FINGER_PRINT_SIZE = 50
+CNN_MAX_ITER = 150000
+CNN_LB_1 = 0.0001
+CNN_LB_2 = 0.01
+
+CURRENT_KFOLD = KFOLD_FOLDER_EC_AEOLUS  # KFOLD_FOLDER_EC_Liu

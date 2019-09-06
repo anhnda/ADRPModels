@@ -1,0 +1,1 @@
+Num drug: 1358, num ADR: 2707, num pairs: 605121, avg adr/drug: 445.59720176730485, avg drug/ avg: 223.53934244551164

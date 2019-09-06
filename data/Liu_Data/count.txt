@@ -1,0 +1,1 @@
+Num drug: 828, num ADR: 1385, num pairs: 58822, avg adr/drug: 71.04106280193237, avg drug/ avg: 42.47075812274368

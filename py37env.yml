@@ -1,0 +1,12 @@
+name: py37env
+channels:
+  - openbabel
+dependencies:
+  - python=3.7
+  - numpy
+  - openbabel
+  - pandas
+  - scikit-learn
+  - pytorch
+  - torchvision
+  - matplotlib

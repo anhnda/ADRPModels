@@ -1,0 +1,11 @@
+data_file : random_group_cv_data.indication
+
+Format : drugBankID|drugName|CompoundID|ADE_str|Chem_str|target_gene|transporter|enzyme|kgg|indication|group_str
+
+Each bit of a feature string corresponding to the same bit in the previous feature list files, which attached in the previous email.
+
+E.g,
+
+The second bit in 'target_gene' corresponding to the second Gene_ID in  'target_gene_feature_list'.
+
+The second bit in 'ADE_str' corresponding to the second ADR in file 'ade_feature_list'
