@@ -249,14 +249,17 @@ class GenECFPData():
 
     def loadFold(self, iFold, root=const.CURRENT_KFOLD):
 
+        print("IFOLD: %s, FOLDER: %s" % (iFold, root))
         if root == const.KFOLD_FOLDER_EC_Liu:
             fin = open(const.ECFP_INFO)
         else:
             fin = open(const.AEOLUS_INFO)
 
+
         self.N_DRUGS = int(fin.readline().split(":")[-1].strip())
         self.N_FEATURE = int(fin.readline().split(":")[-1].strip())
         self.MAX_ATOMS = int(fin.readline().split(":")[-1].strip())
+
 
         paths = self.getTrainTestPathByIFold(iFold, root)
         data = []
@@ -269,6 +272,9 @@ class GenECFPData():
                     data.append(np.loadtxt(path))
 
         self.N_ADRS = data[2].shape[1]
+
+        print(self.N_DRUGS, self.N_ADRS)
+
         return data
 
 
@@ -280,7 +286,7 @@ def genKFoldECFPLiu():
 def genKFoldECFPAEOLUS():
 
     data = GenECFPData()
-    data.loadECFPLiuData()
+    data.loadECFPAEOLUSData()
     data.exportKFold(const.KFOLD_FOLDER_EC_AEOLUS)
 
 

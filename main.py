@@ -105,7 +105,17 @@ if __name__ == "__main__":
 
     parser = OptionParser()
 
-    parser.add_option("-m", "--model", dest="modelName", type='string', default="KNN")
+    parser.add_option("-m", "--model", dest="modelName", type='string', default="KNN",
+                      help="MODELNAME: KNN: k-nearest neighbor,\n"
+                            "CCA: canonical correlation analysis,\n"
+                            "RF: random forest,\n"
+                            "SVM: support vector machines,\n"
+                            "RD: random forest,\n"
+                            "GB: gradient boosting,\n"
+                            "LR: logistic regression,\n"
+                            "MF: matrix factorization,\n"
+                            "NN: multilayer feedforward neural network,\n"
+                            "CNN: neural fingerprint model [default: %default]")
     parser.add_option("-d", "--data", dest="data", type='string', default="Liu", help="data: Liu, Aeolus [default: "
                                                                                       "%default]")
     parser.add_option("-i", "--init", dest="init", action='store_true', default=False)
