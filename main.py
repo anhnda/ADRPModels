@@ -125,9 +125,12 @@ if __name__ == "__main__":
     init = options.init
 
     if init == True:
-        import DataFactory
+        from dataProcessor import DataFactory
+
         DataFactory.genKFoldECFPLiu()
         DataFactory.genKFoldECFPAEOLUS()
+        print("Generating %s-Fold data completed.\n" % const.KFOLD)
+        exit(-1)
 
     if options.data == "Liu":
         const.CURRENT_KFOLD = const.KFOLD_FOLDER_EC_Liu

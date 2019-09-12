@@ -1,6 +1,6 @@
 #from DataFactory import DataLoader, DataLoader2
 import const
-from sklearn.metrics import roc_auc_score, auc, roc_curve, average_precision_score
+from sklearn.metrics import roc_auc_score, average_precision_score
 import numpy as np
 
 
@@ -18,7 +18,7 @@ class PredictorWrapper():
 
     def evalAModel(self, model):
         # print model.getInfo()
-        from DataFactory import GenECFPData
+        from dataProcessor.DataFactory import GenAllData
 
         from logger.logger2 import MyLogger
 
@@ -26,7 +26,7 @@ class PredictorWrapper():
         logger.infoAll("K-Fold data folder: %s" % const.CURRENT_KFOLD)
         logger.infoAll("Model: %s" % model.name)
         logger.infoAll("Format: AUC STDERR AUPR STDERR")
-        dataLoader = GenECFPData()
+        dataLoader = GenAllData()
 
 
         arAuc = []

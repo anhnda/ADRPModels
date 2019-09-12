@@ -465,11 +465,11 @@ class CNNModel(Model):
         self.name = "CNN"
 
     def fitAndPredict(self, iFold):
-        from DataFactory import GenECFPData
+        from dataProcessor.DataFactory import GenAllData
         from models.cnnCore import CNNCore
         import random
 
-        dataLoader = GenECFPData()
+        dataLoader = GenAllData()
         datas = dataLoader.loadFold(iFold)
         self.model = CNNCore(dataLoader.N_FEATURE, 5, dataLoader.N_ADRS)
         # self.loss = MSELoss()
@@ -584,11 +584,18 @@ class NeuNModel(Model):
         nInput, dimInput = input.shape
         nOutput, dimOutput = output.shape
         modules = []
-        modules.append(nn.Linear(dimInput, const.NeuN_H1))
-        modules.append(nn.ReLU())
-        modules.append(nn.Linear(const.NeuN_H1, dimOutput))
+        # modules.append(nn.Linear(dimInput, const.NeuN_H1))
         # modules.append(nn.ReLU())
-        # modules.append(nn.Softmax())
+        # modules.append(nn.Linear(const.NeuN_H1, dimOutput))
+
+        modules.append(nn.Linear(dimInput, const.NeuN_H1))
+        modules.append(nn.Sigmoid())
+        modules.append(nn.Linear(const.NeuN_H1, const.NeuN_H2))
+        modules.append(nn.Sigmoid())
+        modules.append(nn.Linear(const.NeuN_H2, dimOutput))
+        # modules.append(nn.ReLU())
+        modules.append(nn.Softmax(dim=-1))
+
         self.model = nn.Sequential(*modules)
         self.loss = MSELoss()
         optimizer = torch.optim.Adam(self.model.parameters(), lr=const.LEARNING_RATE)

@@ -1,5 +1,8 @@
-DATA_FOLDER = "./data"
-SCCA_RE_DIR = "./data/kfolds"
+import os
+CUR_DIR = os.path.dirname(os.path.realpath(__file__))
+
+DATA_FOLDER = "%s/data" % CUR_DIR
+SCCA_RE_DIR = "%s/data/kfolds" % CUR_DIR
 
 # DATA_PATH = "%s/random_group_cv_data.indication"%DATA_FOLDER
 # KFOLD_FOLDER = "%s/kfolds"%DATA_FOLDER
@@ -20,6 +23,10 @@ AEOLUS_CHEM_PATH = "%s/drugCidInfo.dat_Fix" % AEOLUS_ROOT_DATA
 AEOLUS_ECFP_PATH = "%s/AEOUS_Feature.dat" % AEOLUS_ROOT_DATA
 AEOLUS_INFO = "%s/AEOLUS_ECFP.info" % AEOLUS_ROOT_DATA
 
+
+BIO2RDF_FOLDER = "%s/Bio2RDF" % DATA_FOLDER
+BIO2RDF_DRUG_TRIPLE_PATH = "%s/Bio2RDFDrugTriple.txt" % BIO2RDF_FOLDER
+BIO2RDF_FEATURE_PATH = "%s/Bio2RDFDrugFeature.txt" % BIO2RDF_FOLDER
 #DATA_ROOT_2 = "/home/anhnd/DTI Project/Codes/BioDataLoader/out/data"
 
 KFOLD = 10
@@ -33,7 +40,10 @@ INPUT_SIZE = 881
 KNN = 10
 RF = 10
 CCA = 50
-NeuN_H1 = 300
+
+NeuN_H1 = 1000
+NeuN_H2 = 800
+
 NeuIter = 150
 LEARNING_RATE = 0.005
 SVM_C = 1
