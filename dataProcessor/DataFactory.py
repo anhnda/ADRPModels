@@ -33,9 +33,30 @@ class GenAllData:
                     ar[drugIdx][iAtom][iFeature] = drugData[iAtom][iFeature]
         return ar
 
+    def loadBio2RDFFeatures(self, path):
+        fin = open(path)
+        features = []
+        while True:
+            line = fin.readline()
+            if line == "":
+                break
+            line = line.strip()
+            line = line.split("|")[1]
+
+            parts = line.split(",")
+            arFeature = set()
+            if len(line) > 0:
+                for p in parts:
+                    arFeature.add(p)
+
+            features.append(arFeature)
+        fin.close()
+        return features
+
     def loadECFPLiuData(self):
-        ECFPFeatures = utils.load_obj(const.ECFP_FEATURE_PATH)
-        fADR = open(const.ECFP_ADR_PATH)
+        ECFPFeatures = utils.load_obj(const.LIU_ECFP_PATH)
+        BIO2RDFFeatures = self.loadBio2RDFFeatures(const.LIU_BIO2RDF_PATH)
+        fADR = open(const.LIU_ADR_PATH)
         Chems = []
         ADRs = []
         while True:
@@ -55,17 +76,22 @@ class GenAllData:
             print("Fatal error. Missmatched data")
             exit(-1)
 
-        fin = open(const.ECFP_INFO)
+        fin = open(const.LIU_INFO)
         self.N_DRUGS = int(fin.readline().split(":")[-1].strip())
         self.N_FEATURE = int(fin.readline().split(":")[-1].strip())
         self.MAX_ATOMS = int(fin.readline().split(":")[-1].strip())
 
         self.ECFPFeatures = ECFPFeatures
+        self.Bio2RDFFeatures = BIO2RDFFeatures
         self.Chems = Chems
         self.ADRs = ADRs
 
+
+
     def loadECFPAEOLUSData(self):
         ECFPFeatures = utils.load_obj(const.AEOLUS_ECFP_PATH)
+        BIO2RDFFeatures = self.loadBio2RDFFeatures(const.AEOLUS_BIO2RDF_PATH)
+
         fADR = open(const.AEOLUS_ADR_PATH)
         fChem = open(const.AEOLUS_CHEM_PATH)
         Chems = []
@@ -97,8 +123,10 @@ class GenAllData:
         self.MAX_ATOMS = int(fin.readline().split(":")[-1].strip())
 
         self.ECFPFeatures = ECFPFeatures
+        self.Bio2RDFFeatures = BIO2RDFFeatures
         self.Chems = Chems
         self.ADRs = ADRs
+
 
     def getTrainTestPathByIFold(self, ifold, root=const.KFOLD_FOLDER_EC_Liu):
         pTrainECFeature = "%s/%s_ec_%s" % (root, const.TRAIN_PREFIX_EC, ifold)
@@ -111,7 +139,7 @@ class GenAllData:
 
         pTrainBioRDFFeature = "%s/%s_biordf_%s" % (root, const.TRAIN_PREFIX_EC, ifold)
         pTestBioRDFFeature = "%s/%s_biordf_%s" % (root, const.TEST_PREFIX_EC, ifold)
-        return pTrainECFeature, pTrainChemFeature, pTrainADRs, pTestECFeature, pTestChemFeature, pTestADRs
+        return pTrainECFeature, pTrainChemFeature, pTrainBioRDFFeature, pTrainADRs, pTestECFeature, pTestChemFeature,pTestBioRDFFeature, pTestADRs
 
     def exportKFold(self, root=const.KFOLD_FOLDER_EC_Liu):
         foldSize = self.N_DRUGS / const.KFOLD
@@ -120,7 +148,7 @@ class GenAllData:
         random.shuffle(order)
 
         for i in range(const.KFOLD):
-            # pTrainECFeature, pTrainChemFeature, pTrainADRs, pTestECFeature, pTestChemFeature, pTestADRs, pTrainBioRDFFeature, pTestBioRDFFeature
+            # pTrainECFeature, pTrainChemFeature, pTrainBioRDFFeature, pTrainADRs, pTestECFeature, pTestChemFeature,pTestBioRDFFeature, pTestADRs
             paths = self.getTrainTestPathByIFold(i, root)
 
             arTrain = []
@@ -135,18 +163,18 @@ class GenAllData:
                 if start <= jj < end:
                     ar = arTest
                 ix = order[jj]
-                ar.append([self.ECFPFeatures[ix], self.Chems[ix], self.ADRs[ix]])
+                ar.append([self.ECFPFeatures[ix], self.Chems[ix], self.Bio2RDFFeatures[ix], self.ADRs[ix]])
 
             ars = [arTrain, arTest]
 
             for ii in range(2):
-                for jj in range(3):
-                    path = paths[ii * 3 + jj]
+                for jj in range(4):
+                    path = paths[ii * 4 + jj]
                     tmp = ars[ii]
                     data = []
                     for d in tmp:
                         data.append(d[jj])
-                    if jj == 0:
+                    if jj == 0 or jj == 2:
                         utils.save_obj(data, path)
                     else:
                         data = np.vstack(data)
@@ -156,7 +184,7 @@ class GenAllData:
 
         print("IFOLD: %s, FOLDER: %s" % (iFold, root))
         if root == const.KFOLD_FOLDER_EC_Liu:
-            fin = open(const.ECFP_INFO)
+            fin = open(const.LIU_INFO)
         else:
             fin = open(const.AEOLUS_INFO)
 
@@ -167,18 +195,28 @@ class GenAllData:
         paths = self.getTrainTestPathByIFold(iFold, root)
         data = []
         for i in range(2):
-            for j in range(3):
-                path = paths[i * 3 + j]
-                if j == 0:
+            for j in range(4):
+                path = paths[i * 4 + j]
+                if j == 0 or j == 2:
                     data.append(utils.load_obj(path))
                 else:
                     data.append(np.loadtxt(path))
 
-        self.N_ADRS = data[2].shape[1]
+        self.N_ADRS = data[3].shape[1]
 
         print(self.N_DRUGS, self.N_ADRS)
 
         return data
+
+
+
+def convertBioRDFSet2Array(sets):
+        numDrugs = len(sets)
+        ar = np.zeros((numDrugs,const.NUM_BIO2RDF_FEATURE))
+        for i,vs in enumerate(sets):
+            for v in vs:
+                ar[i][int(v)] = 1
+        return ar
 
 
 def genKFoldECFPLiu():
@@ -194,14 +232,12 @@ def genKFoldECFPAEOLUS():
 
 
 if __name__ == "__main__":
-    # Original Liu_Data
-    # data = DataLoader()
-    # data.exportKFold()
+
 
     # Liu_Data With ECFP
-    # genKFoldECFPLiu()
+    genKFoldECFPLiu()
 
     # AeolusData
-    # genKFoldECFPAEOLUS()
+    genKFoldECFPAEOLUS()
 
     pass

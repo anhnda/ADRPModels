@@ -1,5 +1,5 @@
 from predictorWrapper import PredictorWrapper
-from models.models import MultiSVM, KNN, CCAModel, RFModel, RandomModel, NeuNModel, GBModel, RSCCAModel, MFModel, \
+from models.models import MultiSVM, KNN, KGSIM, CCAModel, RFModel, RandomModel, NeuNModel, GBModel, RSCCAModel, MFModel, \
     LogisticModel
 from optparse import OptionParser
 import const
@@ -43,6 +43,13 @@ def runKNN():
         print(wrapper.evalAModel(model))
 
 
+def runKGSIM():
+    wrapper = PredictorWrapper()
+    KLIST = [20 * i for i in range(1, 2)]
+    for k in KLIST:
+        const.KGSIM = k
+        model = KGSIM()
+        print(wrapper.evalAModel(model))
 def runCCA():
     wrapper = PredictorWrapper()
     NCLIST = [10 * i for i in range(1, 2)]
@@ -105,8 +112,9 @@ if __name__ == "__main__":
 
     parser = OptionParser()
 
-    parser.add_option("-m", "--model", dest="modelName", type='string', default="KNN",
+    parser.add_option("-m", "--model", dest="modelName", type='string', default="KGSIM",
                       help="MODELNAME: KNN: k-nearest neighbor,\n"
+                           "KGSIM: knowledge graph similairity,\n"
                             "CCA: canonical correlation analysis,\n"
                             "RF: random forest,\n"
                             "SVM: support vector machines,\n"
@@ -119,6 +127,8 @@ if __name__ == "__main__":
     parser.add_option("-d", "--data", dest="data", type='string', default="Liu", help="data: Liu, Aeolus [default: "
                                                                                       "%default]")
     parser.add_option("-i", "--init", dest="init", action='store_true', default=False)
+    parser.add_option("-f", "--feature", dest="feature", type='int', default=0)
+
 
     (options, args) = parser.parse_args()
 
@@ -142,9 +152,12 @@ if __name__ == "__main__":
 
 
     modelName = options.modelName
+    const.FEATURE_MODE = options.feature
 
     if modelName == "KNN":
         runKNN()
+    elif modelName == "KGSIM":
+        runKGSIM()
     elif modelName == "CCA":
         runCCA()
     elif modelName == "RF":

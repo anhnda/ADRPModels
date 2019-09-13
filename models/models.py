@@ -127,7 +127,7 @@ class LogisticModel(Model):
         reps = []
         nTest = inputTest.shape[0]
         print("LR for %s classes" % nClass)
-        model = LogisticRegression(C=const.SVM_C)
+        model = LogisticRegression(C=const.SVM_C, solver='lbfgs')
         self.model = model
         for i in range(nClass):
             if i % 10 == 0:
@@ -325,6 +325,46 @@ class KNN(Model):
         return "KNN %s" % const.KNN
 
 
+class KGSIM(Model):
+    def __init__(self):
+        self.isFitAndPredict = True
+        self.name = "KGSIM"
+
+    def fitAndPredict(self, inputTrain, outputTrain, inputTest):
+        print(len(inputTrain), outputTrain.shape, len(inputTest))
+
+        nTrain, nTest = len(inputTrain), len(inputTest)
+        outSize = outputTrain.shape[1]
+        simMatrix = np.ndarray((nTest, nTrain), dtype=float)
+        for i in range(nTest):
+            for j in range(nTrain):
+                simMatrix[i][j] = utils.get3WJaccardOnSets(inputTest[i], inputTrain[j])
+
+        args = np.argsort(simMatrix, axis=1)[:, ::-1]
+        args = args[:, :const.KGSIM]
+        # print args
+
+        outputs = []
+        for i in range(nTest):
+            out = np.zeros(outSize, dtype=float)
+            matches = args[i]
+            simScores = simMatrix[i, matches]
+            ic = -1
+            sum = 1e-10
+            for j in matches:
+                ic += 1
+                out += simScores[ic] * outputTrain[j]
+                sum += simScores[ic]
+            out /= sum
+            outputs.append(out)
+        outputs = np.vstack(outputs)
+
+        return outputs
+
+    def getInfo(self):
+        return "KGSIM %s" % const.KNN
+
+
 class MFModel(Model):
     def __init__(self):
         self.isFitAndPredict = True
@@ -332,7 +372,6 @@ class MFModel(Model):
 
     def fitAndPredict(self, intpuTrain, outputTrain, inputTest):
         from sklearn.decomposition import NMF
-
 
         self.model = NMF(const.N_FEATURE)
         chemFeatures = self.model.fit_transform(outputTrain)
@@ -379,7 +418,6 @@ class CCAModel(Model):
         self.name = "CCA"
 
     def fit(self, inputTrain, outputTrain):
-
         self.model.fit(inputTrain, outputTrain)
         print(self.model.x_weights_.shape)
         print(self.model.y_weights_.shape)
@@ -475,8 +513,7 @@ class CNNModel(Model):
         # self.loss = MSELoss()
         optimizer = torch.optim.Adam(self.model.parameters(), lr=0.0001)
 
-        N_TRAIN_DRUG = len(datas[0])
-        N_TEST_DRUG = len(datas[3])
+        N_TRAIN_DRUG = len(datas[const.EC_TRAIN_INP_DATA_INDEX])
         # orderTrain = np.arange(0,N_TRAIN_DRUG)
         self.currentTranIdx = 0
 
@@ -497,22 +534,22 @@ class CNNModel(Model):
             start = self.currentTranIdx
             end = self.currentTranIdx + batchSize
             if end <= N_TRAIN_DRUG:
-                features = getSubList(datas[0], self.TRAIN_ORDER[start:end])
+                features = getSubList(datas[const.EC_TRAIN_INP_DATA_INDEX], self.TRAIN_ORDER[start:end])
                 features = dataLoader.paddingECEPFeatureToNumpyArray(features)
                 self.currentTranIdx = end
-                outputs = datas[2][self.TRAIN_ORDER[start:end]]
+                outputs = datas[3][self.TRAIN_ORDER[start:end]]
             else:
 
                 end = N_TRAIN_DRUG
-                parts1Features = getSubList(datas[0], self.TRAIN_ORDER[start:end])
-                parts1Out = datas[2][self.TRAIN_ORDER[start:end]]
+                parts1Features = getSubList(datas[const.EC_TRAIN_INP_DATA_INDEX], self.TRAIN_ORDER[start:end])
+                parts1Out = datas[const.EC_TRAIN_OUT_DATA_INDEX][self.TRAIN_ORDER[start:end]]
 
                 end = batchSize - (end - start)
                 start = 0
 
                 random.shuffle(self.TRAIN_ORDER)
-                parts2Features = getSubList(datas[0], self.TRAIN_ORDER[start:end])
-                parts2Out = datas[2][self.TRAIN_ORDER[start:end]]
+                parts2Features = getSubList(datas[const.EC_TRAIN_INP_DATA_INDEX], self.TRAIN_ORDER[start:end])
+                parts2Out = datas[const.EC_TRAIN_OUT_DATA_INDEX][self.TRAIN_ORDER[start:end]]
 
                 features = []
                 for f in parts1Features:
@@ -546,9 +583,9 @@ class CNNModel(Model):
                 torch.no_grad()
                 # Testing...
                 outs = []
-                print("Test shape", len(datas[3]))
+                print("Test shape", len(datas[const.EC_TEST_INP_DATA_INDEX]))
 
-                for featureTest in datas[3]:
+                for featureTest in datas[const.EC_TEST_INP_DATA_INDEX]:
                     featureTest = dataLoader.paddingECEPFeatureToNumpyArray([featureTest])
                     featureTest = torch.unsqueeze(torch.from_numpy(featureTest).float(), dim=1)
                     out, _ = self.model.forward(featureTest)
@@ -556,13 +593,13 @@ class CNNModel(Model):
                     outs.append(out)
                 outs = np.vstack(outs)
 
-                print("Eval: ", iter, roc_auc_score(datas[5].reshape(-1), outs.reshape(-1)),
-                      average_precision_score(datas[5].reshape(-1), outs.reshape(-1)))
+                print("Eval: ", iter, roc_auc_score(datas[const.EC_TEST_OUT_DATA_INDEX].reshape(-1), outs.reshape(-1)),
+                      average_precision_score(datas[const.EC_TEST_OUT_DATA_INDEX].reshape(-1), outs.reshape(-1)))
 
                 torch.enable_grad()
         # Repredict training data
         outTrains = []
-        for featureTrain in datas[0]:
+        for featureTrain in datas[const.EC_TRAIN_INP_DATA_INDEX]:
             featureTrain = dataLoader.paddingECEPFeatureToNumpyArray([featureTrain])
             featureTrain = torch.unsqueeze(torch.from_numpy(featureTrain).float(), dim=1)
             out, _ = self.model.forward(featureTrain)
@@ -629,4 +666,3 @@ class NeuNModel(Model):
 
     def getInfo(self):
         return self.model
-

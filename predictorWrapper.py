@@ -1,4 +1,4 @@
-#from DataFactory import DataLoader, DataLoader2
+# from DataFactory import DataLoader, DataLoader2
 import const
 from sklearn.metrics import roc_auc_score, average_precision_score
 import numpy as np
@@ -18,6 +18,7 @@ class PredictorWrapper():
 
     def evalAModel(self, model):
         # print model.getInfo()
+        from dataProcessor import DataFactory
         from dataProcessor.DataFactory import GenAllData
 
         from logger.logger2 import MyLogger
@@ -28,7 +29,6 @@ class PredictorWrapper():
         logger.infoAll("Format: AUC STDERR AUPR STDERR")
         dataLoader = GenAllData()
 
-
         arAuc = []
         arAupr = []
         trainAucs = []
@@ -36,10 +36,23 @@ class PredictorWrapper():
 
         for i in range(const.KFOLD):
             datas = dataLoader.loadFold(i)
-            trainInp, trainOut, testInp, testOut = datas[1], datas[2], datas[4], datas[5]
-            print (trainInp.shape, trainOut.shape, testInp.shape, testOut.shape)
+            trainInp, trainKGInp, trainOut, testInp, testKGInp, testOut = datas[1], datas[2], datas[3], datas[5], datas[
+                6], datas[7]
+
+            if const.FEATURE_MODE == const.BIO2RDF_FEATURE:
+                trainInp = DataFactory.convertBioRDFSet2Array(trainKGInp)
+                testInp = DataFactory.convertBioRDFSet2Array(testKGInp)
+
+            print(trainInp.shape, trainOut.shape, testInp.shape, testOut.shape)
             if model.name == "CNN":
                 predictedValues = model.fitAndPredict(i)
+            elif model.name == "KGSIM":
+                if const.FEATURE_MODE != const.BIO2RDF_FEATURE:
+                    logger.infoAll("Fatal error: KGSIM only runs with const.FEATURE_MODE == const.BIO2RDF_FEATURE. "
+                                   "Current mode is const.CHEM_FEATURE.")
+                    exit(-1)
+                predictedValues = model.fitAndPredict(trainKGInp, trainOut, testKGInp)
+                model.repred = model.fitAndPredict(trainKGInp, trainOut, trainKGInp)
             else:
                 if model.isFitAndPredict:
                     if model.name == "NeuN":
@@ -75,7 +88,6 @@ class PredictorWrapper():
 
         meanTrainAUC, seTranAUC = self.__getMeanSE(trainAucs)
         meanTranAUPR, seTrainAUPR = self.__getMeanSE(trainAuprs)
-
 
         # logger.infoAll(model.name)
         logger.infoAll(model.getInfo())
