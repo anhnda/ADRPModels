@@ -4,6 +4,10 @@ import const
 from sklearn.metrics import roc_auc_score, average_precision_score
 import torch
 import torch.nn as nn
+import time
+
+from sklearn import svm
+import os
 
 
 class Model:
@@ -47,10 +51,43 @@ class MultiSVM(Model):
         self.isFitAndPredict = True
         self.name = "SVM"
 
-    def fitAndPredict(self, intpuTrain, outputTrain, inputTest):
+    def svmModel(self, i):
+
+        # print (os.getpid(), i)
+        def checkOneClass(inp, nSize):
+            s = sum(inp)
+            if s == 0:
+                ar = np.zeros(nSize)
+            elif s == len(inp):
+                ar = np.ones(nSize)
+            else:
+                ar = -1
+            return ar
+
+        model2 = svm.SVC(C=const.SVM_C, gamma='auto', kernel='rbf', probability=True)
+        output = self.sharedOutputTrain.array[:, i]
+        nTest = self.sharedInputTest.array.shape[0]
+        ar = checkOneClass(output, nTest)
+        ar2 = checkOneClass(output, self.sharedInputTrain.array.shape[0])
+
+        if type(ar) == int:
+
+            model2.fit(self.sharedInputTrain.array, output)
+            output = model2.predict_proba(self.sharedInputTest.array)[:, 1]
+            rep = model2.predict_proba(self.sharedInputTrain.array)[:, 1]
+        else:
+            output = ar
+            rep = ar2
+
+        return output, rep, i
+
+    def __call__(self, i):
+        return self.svmModel(i)
+
+    def fitAndPredict(self, inputTrain, outputTrain, inputTest):
         from sklearn import svm
 
-        print(intpuTrain.shape, outputTrain.shape, inputTest.shape)
+        print(inputTrain.shape, outputTrain.shape, inputTest.shape)
 
         def checkOneClass(inp, nSize):
             s = sum(inp)
@@ -69,24 +106,67 @@ class MultiSVM(Model):
         print("SVM for %s classes" % nClass)
         model = svm.SVC(C=const.SVM_C, gamma='auto', kernel='rbf', probability=True)
         self.model = model
-        for i in range(nClass):
-            if i % 10 == 0:
-                print("\r%s" % i, end="")
-            output = outputTrain[:, i]
-            ar = checkOneClass(output, nTest)
-            ar2 = checkOneClass(output, intpuTrain.shape[0])
 
-            # print clf
-            if type(ar) == int:
+        from models.sharedMem import SharedNDArray
+        from multiprocessing import Pool
 
-                model.fit(intpuTrain, output)
-                output = model.predict_proba(inputTest)[:, 1]
-                rep = model.predict_proba(intpuTrain)[:, 1]
-            else:
-                output = ar
-                rep = ar2
-            outputs.append(output)
-            reps.append(rep)
+        self.sharedInputTrain = SharedNDArray.copy(inputTrain)
+        self.sharedInputTest = SharedNDArray.copy(inputTest)
+        self.sharedOutputTrain = SharedNDArray.copy(outputTrain)
+
+        if const.SVM_PARALLEL:
+            print ("In parallel mode")
+            start = time.time()
+
+            iters = np.arange(0, nClass)
+            pool = Pool(const.N_PARALLEL)
+            adrOutputs = pool.map_async(self, iters)
+            pool.close()
+            pool.join()
+
+            outputs = []
+            reps = []
+            while not adrOutputs.ready():
+                print("num left: {}".format(adrOutputs._number_left))
+                adrOutputs.wait(1)
+
+            print(adrOutputs)
+            dout = dict()
+            for output in adrOutputs.get():
+                dout[output[2]] = output[0], output[1]
+
+            for ii in range(len(dout)):
+                out1, out2 = dout[ii]
+                outputs.append(out1)
+                reps.append(out2)
+
+            end = time.time()
+            print("Elapsed: ", end - start)
+
+        else:
+            print ("In sequential mode")
+            start = time.time()
+
+            for i in range(nClass):
+                if i % 10 == 0:
+                    print("\r%s" % i, end="")
+                output = outputTrain[:, i]
+                ar = checkOneClass(output, nTest)
+                ar2 = checkOneClass(output, inputTrain.shape[0])
+
+                # print clf
+                if type(ar) == int:
+                    model.fit(inputTrain, output)
+                    output = model.predict_proba(inputTest)[:, 1]
+                    rep = model.predict_proba(inputTrain)[:, 1]
+                else:
+                    output = ar
+                    rep = ar2
+                outputs.append(output)
+                reps.append(rep)
+
+            end = time.time()
+            print("Elapsed: ", end - start)
 
         outputs = np.vstack(outputs).transpose()
         reps = np.vstack(reps).transpose()
@@ -449,7 +529,7 @@ class CCAModel(Model):
             s = np.sum(x)
             print(s)
 
-        eval()
+        #eval()
         y = self.predict(inputTrain)
         self.repred = y
         print("In Train: ", roc_auc_score(outputTrain.reshape(-1), y.reshape(-1)))
@@ -626,12 +706,14 @@ class NeuNModel(Model):
         # modules.append(nn.Linear(const.NeuN_H1, dimOutput))
 
         modules.append(nn.Linear(dimInput, const.NeuN_H1))
-        modules.append(nn.Sigmoid())
+        modules.append(nn.ReLU())
         modules.append(nn.Linear(const.NeuN_H1, const.NeuN_H2))
         modules.append(nn.Sigmoid())
         modules.append(nn.Linear(const.NeuN_H2, dimOutput))
-        # modules.append(nn.ReLU())
-        modules.append(nn.Softmax(dim=-1))
+
+        modules.append(nn.Sigmoid())
+
+        #modules.append(nn.Softmax(dim=-1))
 
         self.model = nn.Sequential(*modules)
         self.loss = MSELoss()

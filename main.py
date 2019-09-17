@@ -26,7 +26,7 @@ def runRF():
 
 def runGB():
     wrapper = PredictorWrapper()
-    PLIST = [10 * i for i in range(1, 2)]
+    PLIST = [60 * i for i in range(1, 2)]
 
     for p in PLIST:
         const.RF = p
@@ -52,7 +52,7 @@ def runKGSIM():
         print(wrapper.evalAModel(model))
 def runCCA():
     wrapper = PredictorWrapper()
-    NCLIST = [10 * i for i in range(1, 2)]
+    NCLIST = [10 * i for i in range(1, 10)]
     for c in NCLIST:
         const.CCA = c
         model = CCAModel()
@@ -127,7 +127,10 @@ if __name__ == "__main__":
     parser.add_option("-d", "--data", dest="data", type='string', default="Liu", help="data: Liu, Aeolus [default: "
                                                                                       "%default]")
     parser.add_option("-i", "--init", dest="init", action='store_true', default=False)
-    parser.add_option("-f", "--feature", dest="feature", type='int', default=0)
+    parser.add_option("-f", "--feature", dest="feature", type='int', default=0, help='feature: 0 PubChem, 1 ChemBio. '
+                                                                                     '[default: %default]. '
+                                                                                     'CNN is assigned with 2DChem  '
+                                                                                     'descriptors. ')
 
 
     (options, args) = parser.parse_args()
@@ -144,7 +147,7 @@ if __name__ == "__main__":
 
     if options.data == "Liu":
         const.CURRENT_KFOLD = const.KFOLD_FOLDER_EC_Liu
-    elif options.data == "Aeolus":
+    elif options.data == "AEOLUS":
         const.CURRENT_KFOLD = const.KFOLD_FOLDER_EC_AEOLUS
     else:
         print("Fatal error: Unknown data. Only Liu and AEOLUS datasets are supported.")

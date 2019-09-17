@@ -5,24 +5,6 @@ obConversion = openbabel.OBConversion()
 obConversion.SetInAndOutFormats("smi", "mdl")
 
 
-def demo():
-    mol = openbabel.OBMol()
-    obConversion.ReadString(mol, "C1=CC=CS1")
-
-    print
-    'Should print 5 (atoms)'
-    print(mol.NumAtoms())
-
-    for atom in openbabel.OBMolAtomIter(mol):
-        if atom.IsHydrogen():
-            print("Skip a hydrogen")
-            continue
-        print(atom.GetIdx(), atom.GetAtomicNum())
-        for bond in openbabel.OBAtomBondIter(atom):
-            nei = bond.GetNbrAtom(atom)
-            if bond.IsAromatic():
-                print("Is a ring")
-                print(bond.GetBondOrder())
 
 
 def simpleGenECFP(smile):

@@ -62,8 +62,8 @@ class CNNCore(nn.Module):
         re = poolAt1 + poolAt2 + poolAt3 + poolAt4
         re = torch.sum(re, dim=1)
 
-        out = self.lg(self.fc(re))
-
+        out = self.fc(re)
+        out = self.lg(out)
         return out, re
 
     def __getF2Err(self, err):

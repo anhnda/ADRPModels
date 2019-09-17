@@ -46,15 +46,20 @@ TEST_PREFIX = "test_"
 TRAIN_PREFIX_EC = "train_ec_"
 TEST_PREFIX_EC = "test_ec_"
 
-INPUT_SIZE = 881
-KNN = 10
-KGSIM = 10
+KNN = 60
+KGSIM = 60
 
 RF = 10
 CCA = 50
 
-NeuN_H1 = 1000
-NeuN_H2 = 800
+SVM_PARALLEL = True
+N_PARALLEL = 7
+
+NeuN_H1 = 200
+NeuN_H2 = 300
+
+#NeuN_H1 = 1000
+#NeuN_H2 = 800
 
 NeuIter = 150
 LEARNING_RATE = 0.005
