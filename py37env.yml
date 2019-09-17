@@ -10,3 +10,4 @@ dependencies:
   - pytorch
   - torchvision
   - matplotlib
+  - posix_ipc
