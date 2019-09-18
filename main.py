@@ -129,7 +129,7 @@ if __name__ == "__main__":
     parser.add_option("-i", "--init", dest="init", action='store_true', default=False)
     parser.add_option("-f", "--feature", dest="feature", type='int', default=0, help='feature: 0 PubChem, 1 ChemBio. '
                                                                                      '[default: %default]. '
-                                                                                     'CNN is assigned to 2DChem  '
+                                                                                     'DCN is assigned to 2DChem  '
                                                                                      'descriptors. ')
 
 
