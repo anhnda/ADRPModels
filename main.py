@@ -101,7 +101,7 @@ def runLR():
         print(wrapper.evalAModel(model))
 
 
-def runCNN():
+def runDCN():
     from models.models import CNNModel
     wrapper = PredictorWrapper()
     model = CNNModel()
@@ -122,14 +122,14 @@ if __name__ == "__main__":
                             "GB: gradient boosting,\n"
                             "LR: logistic regression,\n"
                             "MF: matrix factorization,\n"
-                            "NN: multilayer feedforward neural network,\n"
-                            "CNN: neural fingerprint model [default: %default]")
+                            "MLN: multilayer feedforward neural network,\n"
+                            "DCN: neural fingerprint model [default: %default]")
     parser.add_option("-d", "--data", dest="data", type='string', default="Liu", help="data: Liu, Aeolus [default: "
                                                                                       "%default]")
     parser.add_option("-i", "--init", dest="init", action='store_true', default=False)
     parser.add_option("-f", "--feature", dest="feature", type='int', default=0, help='feature: 0 PubChem, 1 ChemBio. '
                                                                                      '[default: %default]. '
-                                                                                     'CNN is assigned with 2DChem  '
+                                                                                     'CNN is assigned to 2DChem  '
                                                                                      'descriptors. ')
 
 
@@ -169,7 +169,7 @@ if __name__ == "__main__":
         runSVM()
     elif modelName == "RD":
         runRandom()
-    elif modelName == "NN":
+    elif modelName == "MLN":
         runNeu()
     elif modelName == "GB":
         runGB()
@@ -179,7 +179,7 @@ if __name__ == "__main__":
         runMF()
     elif modelName == "LR":
         runLR()
-    elif modelName == "CNN":
-        runCNN()
+    elif modelName == "DCN":
+        runDCN()
     else:
         print("Method named %s is unimplemented." % modelName)
