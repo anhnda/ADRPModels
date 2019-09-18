@@ -10,6 +10,7 @@ Apache jena
 Bio2RDF data:
 - drugbank.nq: http://download.bio2rdf.org/files/release/4/drugbank/drugbank.nq.gz
 - sider-se.np: http://download.bio2rdf.org/files/release/4/sider/sider-se.nq.gz
+
 These files are downloaded and extracted at $DATA_DIR (a custom folder)
 
 
@@ -31,26 +32,6 @@ tdbloader --loc $CUSTOM_LOC $DATA_DIR/sider-se.nq
 
 
 
-###Query features for a drug having drugbank id %s
-
-```
-Connect to the fuseki server if nescessary.
-```
-
-``` 
-PREFIX DB: <http://bio2rdf.org/drugbank:>  
-SELECT   ?p ?o 
-FROM NAMED <http://bio2rdf.org/drugbank_resource:bio2rdf.dataset.drugbank.R4> 
-FROM NAMED <http://bio2rdf.org/sider_resource:bio2rdf.dataset.sider.R4>
-WHERE { GRAPH ?g {DB:%s ?p ?o}}
-```
-
-```
-PREFIX DB: <http://bio2rdf.org/drugbank:>
-SELECT   ?s ?p 
-FROM NAMED <http://bio2rdf.org/drugbank_resource:bio2rdf.dataset.drugbank.R4>
-FROM NAMED <http://bio2rdf.org/sider_resource:bio2rdf.dataset.sider.R4>
-WHERE { GRAPH ?g {?s ?p DB:%s}}
 
 ```
 
