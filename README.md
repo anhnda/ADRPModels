@@ -17,6 +17,10 @@ Duc Anh Nguyen, Canh Hao Nguyen and Hiroshi Mamitsuka
 - To run and evaluate a model:
 
     `python main.py -d DATA_NAME -m MODEL_NAME -f FEATURE_TYPE` 
+    
+    For example:
+    `python main.py -d Liu -m KNN -f 0
+    `
 
     Evaluation results containing AUC, AUPR and STDERR are stored in "./results" folder.
 

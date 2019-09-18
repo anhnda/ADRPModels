@@ -113,8 +113,7 @@ if __name__ == "__main__":
     parser = OptionParser()
 
     parser.add_option("-m", "--model", dest="modelName", type='string', default="KGSIM",
-                      help="MODELNAME: KNN: k-nearest neighbor,\n"
-                           "KGSIM: knowledge graph similairity,\n"
+                      help="MODELNAME: KNN: k-nearest neighbor,\n"                         
                             "CCA: canonical correlation analysis,\n"
                             "RF: random forest,\n"
                             "SVM: support vector machines,\n"
