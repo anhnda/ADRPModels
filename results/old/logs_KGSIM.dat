@@ -1,0 +1,72 @@
+K-Fold data folder: /home/anhnd/DTI Project/Codes/MethodsComparisonX/data/kfolds_ec_liu
+Model: KGSIM
+Format: AUC STDERR AUPR STDERR
+K-Fold data folder: /home/anhnd/DTI Project/Codes/MethodsComparisonX/data/kfolds_ec_liu
+Model: KGSIM
+Format: AUC STDERR AUPR STDERR
+K-Fold data folder: /home/anhnd/DTI Project/Codes/MethodsComparisonX/data/kfolds_ec_liu
+Model: KGSIM
+Format: AUC STDERR AUPR STDERR
+K-Fold data folder: /home/anhnd/DTI Project/Codes/MethodsComparisonX/data/kfolds_ec_liu
+Model: KGSIM
+Format: AUC STDERR AUPR STDERR
+K-Fold data folder: /home/anhnd/DTI Project/Codes/MethodsComparisonX/data/kfolds_ec_liu
+Model: KGSIM
+Format: AUC STDERR AUPR STDERR
+K-Fold data folder: /home/anhnd/DTI Project/Codes/MethodsComparisonX/data/kfolds_ec_liu
+Model: KGSIM
+Format: AUC STDERR AUPR STDERR
+KGSIM 10
+((746, 881), (82, 1385))
+Test : 0.9045876096851974 0.00325372353230484 0.47252980922883625 0.007475306320868521
+Train: 0.9759914339193339 9.126461716708934e-05 0.6745199807070013 0.0007990592303674139
+K-Fold data folder: /home/anhnd/DTI Project/Codes/MethodsComparisonX/data/kfolds_ec_aeolus
+Model: KGSIM
+Format: AUC STDERR AUPR STDERR
+K-Fold data folder: /home/anhnd/DTI Project/Codes/MethodsComparisonX/data/kfolds_ec_liu
+Model: KGSIM
+Format: AUC STDERR AUPR STDERR
+KGSIM 10
+((746, 881), (82, 1385))
+Test : 0.9045876096851974 0.00325372353230484 0.47252980922883625 0.007475306320868521
+Train: 0.9759914339193339 9.126461716708934e-05 0.6745199807070013 0.0007990592303674139
+K-Fold data folder: /home/anhnd/DTI Project/Codes/MethodsComparisonX/data/kfolds_ec_liu
+Model: KGSIM
+Format: AUC STDERR AUPR STDERR
+KGSIM 10
+((746, 881), (82, 1385))
+Test : 0.8875744597713895 0.0032057247452664576 0.4738156424500956 0.006877309926449453
+Train: 0.9909705524246275 4.7780790538492496e-05 0.8365956393634881 0.0007834064072006602
+K-Fold data folder: /home/anhnd/DTI Project/Codes/MethodsComparisonX/data/kfolds_ec_liu
+Model: KGSIM
+Format: AUC STDERR AUPR STDERR
+K-Fold data folder: /home/anhnd/DTI Project/Codes/MethodsComparisonX/data/kfolds_ec_liu
+Model: KGSIM
+Format: AUC STDERR AUPR STDERR
+KGSIM 10
+((746, 881), (82, 1385))
+Test : 0.8946533499799086 0.0030003577541569387 0.48503638808872146 0.0076928783648134835
+Train: 0.9706693408825633 0.00011441660379291922 0.6545121010222171 0.000977004465977078
+K-Fold data folder: /home/anhnd/DTI Project/Codes/MethodsComparisonX/data/kfolds_ec_liu
+Model: KGSIM
+Format: AUC STDERR AUPR STDERR
+Fatal error: KGSIM only runs with const.FEATURE_MODE == const.BIO2RDF_FEATURE. Current mode is const.CHEM_FEATURE.
+K-Fold data folder: /home/anhnd/DTI Project/Codes/MethodsComparisonX/data/kfolds_ec_liu
+Model: KGSIM
+Format: AUC STDERR AUPR STDERR
+K-Fold data folder: /home/anhnd/DTI Project/Codes/MethodsComparisonX/data/kfolds_ec_liu
+Model: KGSIM
+Format: AUC STDERR AUPR STDERR
+K-Fold data folder: /home/anhnd/DTI Project/Codes/MethodsComparisonX/data/kfolds_ec_liu
+Model: KGSIM
+Format: AUC STDERR AUPR STDERR
+K-Fold data folder: /home/anhnd/DTI Project/Codes/MethodsComparisonX/data/kfolds_ec_liu
+Model: KGSIM
+Format: AUC STDERR AUPR STDERR
+K-Fold data folder: /home/anhnd/DTI Project/Codes/MethodsComparisonX/data/kfolds_ec_aeolus
+Model: KGSIM
+Format: AUC STDERR AUPR STDERR
+KGSIM 10
+((1223, 6712), (135, 2707))
+Test : 0.87878183418799 0.005515187824721084 0.6785551141263625 0.013092521314148247
+Train: 0.9258579043160905 0.0004872742302300045 0.7813667791366552 0.0013516930353640255

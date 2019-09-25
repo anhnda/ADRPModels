@@ -7,7 +7,8 @@ import torch.nn as nn
 import time
 
 from sklearn import svm
-import os
+from models import lnsm
+
 
 
 class Model:
@@ -115,7 +116,7 @@ class MultiSVM(Model):
         self.sharedOutputTrain = SharedNDArray.copy(outputTrain)
 
         if const.SVM_PARALLEL:
-            print ("In parallel mode")
+            print("In parallel mode")
             start = time.time()
 
             iters = np.arange(0, nClass)
@@ -144,7 +145,7 @@ class MultiSVM(Model):
             print("Elapsed: ", end - start)
 
         else:
-            print ("In sequential mode")
+            print("In sequential mode")
             start = time.time()
 
             for i in range(nClass):
@@ -189,6 +190,9 @@ class LogisticModel(Model):
 
     def fitAndPredict(self, intpuTrain, outputTrain, inputTest):
         from sklearn.linear_model import LogisticRegression
+        import warnings
+        from sklearn.exceptions import DataConversionWarning, ConvergenceWarning
+        warnings.filterwarnings(action='ignore', category=ConvergenceWarning)
 
         print(intpuTrain.shape, outputTrain.shape, inputTest.shape)
 
@@ -207,7 +211,7 @@ class LogisticModel(Model):
         reps = []
         nTest = inputTest.shape[0]
         print("LR for %s classes" % nClass)
-        model = LogisticRegression(C=const.SVM_C, solver='lbfgs')
+        model = LogisticRegression(C=const.SVM_C, solver='saga')
         self.model = model
         for i in range(nClass):
             if i % 10 == 0:
@@ -251,6 +255,15 @@ class RFModel(Model):
         from sklearn.ensemble import RandomForestClassifier
         print(intpuTrain.shape, outputTrain.shape, inputTest.shape)
 
+        def fixListArray(listar):
+            out = []
+            for ar in listar:
+                if min(ar.shape) == 1:
+                    zr = np.zeros(len(ar))
+                    ar = np.concatenate([ar, zr[:, np.newaxis]], axis=1)
+                out.append(ar)
+            return out
+
         def checkOneClass(inp, nSize):
             s = sum(inp)
             if s == 0:
@@ -269,33 +282,52 @@ class RFModel(Model):
         reps = []
         model = RandomForestClassifier(n_estimators=const.RF)
         self.model = model
-        for i in range(nClass):
-            if i % 10 == 0:
-                print("\r%s" % i, end="")
-            output = outputTrain[:, i]
-            ar = checkOneClass(output, nTest)
-            ar2 = checkOneClass(output, intpuTrain.shape[0])
+        model.fit(intpuTrain, outputTrain)
+        print(intpuTrain.shape, outputTrain.shape)
+        o = model.predict_proba(inputTest)
+        r = model.predict_proba(intpuTrain)
 
-            # print model
-            if type(ar) == int:
+        o = fixListArray(o)
+        r = fixListArray(r)
 
-                model.fit(intpuTrain, output)
-                pred = model.predict_proba(inputTest)[:, 1]
-                rep = model.predict_proba(intpuTrain)[:, 1]
+        o = np.asarray(o)
+        r = np.asarray(r)
 
-            else:
-                pred = ar
-                rep = ar2
-                cc += 1
-            predicts.append(pred)
-            reps.append(rep)
-
-        outputs = np.vstack(predicts).transpose()
-        reps = np.vstack(reps).transpose()
+        print(o.shape, r.shape)
+        outputs = o[:, :, 1].transpose()
+        reps = r[:, :, 1].transpose()
+        print("Debug")
+        print(outputs.shape, reps.shape)
         print("In Train: ", roc_auc_score(outputTrain.reshape(-1), reps.reshape(-1)))
         self.repred = reps
-        print("\nDone. Null cls: %s" % cc)
-        print(outputs.shape)
+
+        # for i in range(nClass):
+        #     if i % 10 == 0:
+        #         print("\r%s" % i, end="")
+        #     output = outputTrain[:, i]
+        #     ar = checkOneClass(output, nTest)
+        #     ar2 = checkOneClass(output, intpuTrain.shape[0])
+        #
+        #     # print model
+        #     if type(ar) == int:
+        #
+        #         model.fit(intpuTrain, output)
+        #         pred = model.predict_proba(inputTest)[:, 1]
+        #         rep = model.predict_proba(intpuTrain)[:, 1]
+        #
+        #     else:
+        #         pred = ar
+        #         rep = ar2
+        #         cc += 1
+        #     predicts.append(pred)
+        #     reps.append(rep)
+        #
+        # outputs = np.vstack(predicts).transpose()
+        # reps = np.vstack(reps).transpose()
+        # print("In Train: ", roc_auc_score(outputTrain.reshape(-1), reps.reshape(-1)))
+        # self.repred = reps
+        # print("\nDone. Null cls: %s" % cc)
+        # print(outputs.shape)
 
         return outputs
 
@@ -371,14 +403,21 @@ class KNN(Model):
         self.name = "KNN"
 
     def fitAndPredict(self, inputTrain, outputTrain, inputTest):
+        from sklearn.neighbors import KNeighborsClassifier
         print(inputTrain.shape, outputTrain.shape, inputTest.shape)
 
         nTrain, nTest = inputTrain.shape[0], inputTest.shape[0]
+
+        # self.model = KNeighborsClassifier(const.KNN,metric=utils.getTanimotoScore)
+        # self.model.fit(inputTrain, outputTrain)
+        # outputs = np.asarray(self.model.predict_proba(inputTest))[:, :, 1].transpose()
+        # print("Pred shape:", outputs.shape)
+
         outSize = outputTrain.shape[1]
         simMatrix = np.ndarray((nTest, nTrain), dtype=float)
         for i in range(nTest):
             for j in range(nTrain):
-                simMatrix[i][j] = utils.getTanimotoScore(inputTest[i], inputTrain[j])
+                simMatrix[i][j] = utils.getSimByType(inputTest[i], inputTrain[j], const.KNN_SIM)
 
         args = np.argsort(simMatrix, axis=1)[:, ::-1]
         args = args[:, :const.KNN]
@@ -529,7 +568,7 @@ class CCAModel(Model):
             s = np.sum(x)
             print(s)
 
-        #eval()
+        # eval()
         y = self.predict(inputTrain)
         self.repred = y
         print("In Train: ", roc_auc_score(outputTrain.reshape(-1), y.reshape(-1)))
@@ -554,27 +593,28 @@ class CCAModel(Model):
 class RSCCAModel(Model):
     def __init__(self):
         self.isFitAndPredict = True
-        self.name = "RSCCA"
+        self.name = "SCCA"
 
-    def fitAndPredict(self, inputTrain, outputTrain, inputTest, ifold=0):
-        u = np.loadtxt("%s/u_%s" % (const.SCCA_RE_DIR, ifold))
-        v = np.loadtxt("%s/v_%s" % (const.SCCA_RE_DIR, ifold))
-        print(u.shape, v.shape)
+    def fitAndPredict(self, inputTrain, outputTrain, inputTest, ifold):
         from numpy.linalg import pinv
+        pathWX = "%s/WeightChem_%s" % (const.RSCCA_DATA_DIR, ifold)
+        pathWY = "%s/WeightSE_%s" % (const.RSCCA_DATA_DIR, ifold)
 
-        v = pinv(v)
+        wx = np.loadtxt(pathWX)
+        wy = np.loadtxt(pathWY)
 
-        def predict(input):
-            y = np.matmul(input, u)
-            y = np.matmul(y, v)
-            return y
+        def cal(input):
+            xwx = np.matmul(input, wx)
+            xwxwyt = np.matmul(xwx, wy.transpose())
+            yyt = np.matmul(wy, wy.transpose())
+            invyyt = pinv(yyt)
+            pred = np.matmul(xwxwyt, invyyt)
+            return pred
 
-        self.repred = predict(inputTrain)
-        out = predict(inputTest)
-        print(self.repred.shape)
-
-        print(out.shape)
-        return out
+        pred = cal(inputTest)
+        repred = cal(inputTrain)
+        self.repred = repred
+        return pred
 
 
 class CNNModel(Model):
@@ -706,14 +746,14 @@ class NeuNModel(Model):
         # modules.append(nn.Linear(const.NeuN_H1, dimOutput))
 
         modules.append(nn.Linear(dimInput, const.NeuN_H1))
-        modules.append(nn.ReLU())
+        modules.append(nn.Sigmoid())
         modules.append(nn.Linear(const.NeuN_H1, const.NeuN_H2))
         modules.append(nn.Sigmoid())
         modules.append(nn.Linear(const.NeuN_H2, dimOutput))
 
         modules.append(nn.Sigmoid())
 
-        #modules.append(nn.Softmax(dim=-1))
+        # modules.append(nn.Softmax(dim=-1))
 
         self.model = nn.Sequential(*modules)
         self.loss = MSELoss()
@@ -748,3 +788,32 @@ class NeuNModel(Model):
 
     def getInfo(self):
         return self.model
+
+
+class LNSMModel(Model):
+
+    def __init__(self):
+        self.isFitAndPredict = True
+        self.name = "LNSM"
+        self.inputTrain = ""
+        self.Y = ""
+    def fit(self,input,output):
+        self.inputTrain = input
+        self.Y = lnsm.learnLNSM(input,output)
+        self.repred = output
+
+    def predict(self, inputTest):
+        preds = []
+        for v in inputTest:
+            w = lnsm.getRowLNSM(v,self.inputTrain,-1)
+            pred = np.matmul(w,self.Y)
+            preds.append(pred)
+        preds = np.vstack(preds)
+        return preds
+
+    def fitAndPredict(self, intpuTrain, outputTrain, inputTest):
+
+        self.fit(intpuTrain,outputTrain)
+        return self.predict(inputTest)
+
+

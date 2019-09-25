@@ -2,7 +2,8 @@ import os
 CUR_DIR = os.path.dirname(os.path.realpath(__file__))
 
 DATA_FOLDER = "%s/data" % CUR_DIR
-SCCA_RE_DIR = "%s/data/kfolds" % CUR_DIR
+RSCCA_DATA_DIR = "%s/data/RSCCA" % CUR_DIR
+
 
 # DATA_PATH = "%s/random_group_cv_data.indication"%DATA_FOLDER
 # KFOLD_FOLDER = "%s/kfolds"%DATA_FOLDER
@@ -47,16 +48,17 @@ TRAIN_PREFIX_EC = "train_ec_"
 TEST_PREFIX_EC = "test_ec_"
 
 KNN = 60
+KNN_SIM = 2
 KGSIM = 60
 
 RF = 10
 CCA = 50
 
 SVM_PARALLEL = True
-N_PARALLEL = 7
+N_PARALLEL = 18
 
-NeuN_H1 = 200
-NeuN_H2 = 300
+NeuN_H1 = 250
+NeuN_H2 = 250
 
 #NeuN_H1 = 1000
 #NeuN_H2 = 800
@@ -65,6 +67,8 @@ NeuIter = 150
 LEARNING_RATE = 0.005
 SVM_C = 1
 N_FEATURE = 20
+
+ALPHA = 0.1
 
 CH_NUM_1 = 100
 CH_NUM_2 = 80
@@ -80,6 +84,7 @@ CURRENT_KFOLD = KFOLD_FOLDER_EC_AEOLUS  # KFOLD_FOLDER_EC_Liu
 
 CHEM_FEATURE = 0
 BIO2RDF_FEATURE = 1
+COMBINE_FEATURE = 2
 
 NUM_BIO2RDF_FEATURE = 6712
 

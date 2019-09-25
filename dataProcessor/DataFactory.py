@@ -219,6 +219,19 @@ def convertBioRDFSet2Array(sets):
         return ar
 
 
+def genCombineData():
+    dataLoader = GenAllData()
+    for i in range(const.KFOLD):
+        datas = dataLoader.loadFold(i)
+        trainInp, trainKGInp, trainOut, testInp, testKGInp, testOut = datas[1], datas[2], datas[3], datas[5], datas[
+            6], datas[7]
+        trainInp2 = convertBioRDFSet2Array(trainKGInp)
+        trainInp = np.concatenate([trainInp, trainInp2], axis=1)
+
+        np.savetxt( "%s/trainInpAll_%s" % (const.RSCCA_DATA_DIR, i),trainInp)
+        np.savetxt("%s/trainOutAll_%s" % (const.RSCCA_DATA_DIR, i), trainOut)
+
+
 def genKFoldECFPLiu():
     data = GenAllData()
     data.loadECFPLiuData()

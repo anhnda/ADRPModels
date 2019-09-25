@@ -186,3 +186,25 @@ def get3WJaccardOnSets(set1, set2):
         if s in set2:
             nMatch += 1
     return 3.0 * nMatch / (len1 + len2 + nMatch + 0.1)
+
+
+def get3WJaccardOnArray(ar1,ar2):
+    c1 = np.sum(ar1)
+    c2 = np.sum(ar2)
+    bm = np.dot(ar1, ar2)
+    return bm * 3.0 / (c1 + c2 + bm + 1e-10)
+
+def getF2Sim(ar1,ar2):
+    v = ar1 - ar2
+    return np.dot(v,v)
+
+def getSimByType(ar1,ar2,tp=0):
+    if tp == 0:
+        return getJaccardScore(ar1,ar2)
+    elif tp == 1:
+        return get3WJaccardOnArray(ar1,ar2)
+    elif tp ==2:
+        return getTanimotoScore(ar1,ar2)
+    else:
+        print("Error: Known type %s" % tp)
+        return 0

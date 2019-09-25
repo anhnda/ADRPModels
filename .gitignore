@@ -4,3 +4,4 @@ train_*
 test_*
 __pycache__/*
 results/logs_*.dat
+data/RSCCA/*

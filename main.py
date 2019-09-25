@@ -16,7 +16,7 @@ def runSVM():
 
 def runRF():
     wrapper = PredictorWrapper()
-    PLIST = [10 * i for i in range(1, 2)]
+    PLIST = [10 * i for i in range(1, 10)]
 
     for p in PLIST:
         const.RF = p
@@ -50,6 +50,8 @@ def runKGSIM():
         const.KGSIM = k
         model = KGSIM()
         print(wrapper.evalAModel(model))
+
+
 def runCCA():
     wrapper = PredictorWrapper()
     NCLIST = [10 * i for i in range(1, 10)]
@@ -76,7 +78,7 @@ def runRandom():
 
 def runMF():
     wrapper = PredictorWrapper()
-    KLIST = [10 * i for i in range(1, 2)]
+    KLIST = [10 * i for i in range(1, 10)]
     for k in KLIST:
         const.N_FEATURE = k
         model = MFModel()
@@ -87,14 +89,14 @@ def runNeu():
     wrapper = PredictorWrapper()
     PLIST = [10 * i for i in range(1, 2)]
     for p in PLIST:
-        const.NeuN_H1 = p
+        # const.NeuN_H1 = p
         model = NeuNModel()
         print(wrapper.evalAModel(model))
 
 
 def runLR():
     wrapper = PredictorWrapper()
-    PLIST = [1 * i for i in range(1, 2)]
+    PLIST = [0.1 * i for i in range(10, 1, -1)]
     for p in PLIST:
         const.SVM_C = p
         model = LogisticModel()
@@ -107,30 +109,42 @@ def runDCN():
     model = CNNModel()
     print(wrapper.evalAModel(model))
 
+def runLNSM():
+    from models.models import LNSMModel
+    wrapper = PredictorWrapper()
+    PLIST = [i * 60 for i in range(1,2)]
+    for p in PLIST:
+        const.KNN = p
+        model = LNSMModel()
+        print(wrapper.evalAModel(model))
+
 
 if __name__ == "__main__":
 
     parser = OptionParser()
 
-    parser.add_option("-m", "--model", dest="modelName", type='string', default="KGSIM",
-                      help="MODELNAME: KNN: k-nearest neighbor,\n"                         
-                            "CCA: canonical correlation analysis,\n"
-                            "RF: random forest,\n"
-                            "SVM: support vector machines,\n"
-                            "RD: random forest,\n"
-                            "GB: gradient boosting,\n"
-                            "LR: logistic regression,\n"
-                            "MF: matrix factorization,\n"
-                            "MLN: multilayer feedforward neural network,\n"
-                            "DCN: neural fingerprint model [default: %default]")
-    parser.add_option("-d", "--data", dest="data", type='string', default="Liu", help="data: Liu, Aeolus [default: "
+    parser.add_option("-m", "--model", dest="modelName", type='string', default="LNSM",
+                      help="MODELNAME: KNN: k-nearest neighbor,\n"
+                           "LNSM: linear neighbor similarity,\n"
+                           "CCA: canonical correlation analysis,\n"
+                           "RF: random forest,\n"
+                           "SVM: support vector machines,\n"
+                           "RD: random forest,\n"
+                           "GB: gradient boosting,\n"
+                           "LR: logistic regression,\n"
+                           "MF: matrix factorization,\n"
+                           "MLN: multilayer feedforward neural network,\n"
+                           "DCN: neural fingerprint model [default: %default]")
+    parser.add_option("-d", "--data", dest="data", type='string', default="AEOLUS", help="data: Liu, AEOLUS [default: "
                                                                                       "%default]")
+    parser.add_option("-g", "--gen", dest="gen", action='store_true', default=False,
+                      help="generate combined training data for R script and exit.")
     parser.add_option("-i", "--init", dest="init", action='store_true', default=False)
-    parser.add_option("-f", "--feature", dest="feature", type='int', default=0, help='feature: 0 PubChem, 1 ChemBio. '
-                                                                                     '[default: %default]. '
-                                                                                     'DCN is assigned to 2DChem  '
-                                                                                     'descriptors. ')
-
+    parser.add_option("-f", "--feature", dest="feature", type='int', default=2,
+                      help='feature: 0 PubChem, 1 ChemBio, 2 Combination'
+                           '[default: %default]. '
+                           'DCN is assigned to 2DChem  '
+                           'descriptors. ')
 
     (options, args) = parser.parse_args()
 
@@ -143,6 +157,11 @@ if __name__ == "__main__":
         DataFactory.genKFoldECFPAEOLUS()
         print("Generating %s-Fold data completed.\n" % const.KFOLD)
         exit(-1)
+    if options.gen:
+        from dataProcessor import DataFactory
+        DataFactory.genCombineData()
+        print("Generating combined data completed.\n")
+        exit(-1)
 
     if options.data == "Liu":
         const.CURRENT_KFOLD = const.KFOLD_FOLDER_EC_Liu
@@ -151,13 +170,13 @@ if __name__ == "__main__":
     else:
         print("Fatal error: Unknown data. Only Liu and AEOLUS datasets are supported.")
 
-
-
     modelName = options.modelName
     const.FEATURE_MODE = options.feature
 
     if modelName == "KNN":
         runKNN()
+    elif modelName == "LNSM":
+        runLNSM()
     elif modelName == "KGSIM":
         runKGSIM()
     elif modelName == "CCA":
@@ -172,8 +191,8 @@ if __name__ == "__main__":
         runNeu()
     elif modelName == "GB":
         runGB()
-    # elif methodName == "SCCA":
-    #     runSCCA()
+    elif modelName == "SCCA":
+         runSCCA()
     elif modelName == "MF":
         runMF()
     elif modelName == "LR":
