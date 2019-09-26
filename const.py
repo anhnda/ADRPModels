@@ -57,11 +57,11 @@ CCA = 50
 SVM_PARALLEL = True
 N_PARALLEL = 18
 
-NeuN_H1 = 250
-NeuN_H2 = 250
+#NeuN_H1 = 250
+#NeuN_H2 = 250
 
-#NeuN_H1 = 1000
-#NeuN_H2 = 800
+NeuN_H1 = 1000
+NeuN_H2 = 800
 
 NeuIter = 150
 LEARNING_RATE = 0.005

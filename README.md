@@ -7,6 +7,8 @@ Duc Anh Nguyen, Canh Hao Nguyen and Hiroshi Mamitsuka
     `conda env create -f py37env.yml`
     
     `conda activate py37env`
+    
+    ```pip install qpsolvers==1.0.5```
 
 
 
@@ -19,7 +21,7 @@ Duc Anh Nguyen, Canh Hao Nguyen and Hiroshi Mamitsuka
     `python main.py -d DATA_NAME -m MODEL_NAME -f FEATURE_TYPE` 
     
     For example:
-    `python main.py -d Liu -m KNN -f 0
+    `python main.py -d AEOLUS -m MF -f 2
     `
 
     Evaluation results containing AUC, AUPR and STDERR are stored in "./results" folder.

@@ -96,7 +96,7 @@ def runNeu():
 
 def runLR():
     wrapper = PredictorWrapper()
-    PLIST = [0.1 * i for i in range(10, 1, -1)]
+    PLIST = [10]
     for p in PLIST:
         const.SVM_C = p
         model = LogisticModel()
