@@ -12,13 +12,12 @@ def getRowLNSM(v, mInp, idx=-1):
     if idx >= 0:
         ar[idx] = -10
     args = np.argsort(ar)[::-1][:const.KNN]
-    G = np.ndarray((const.KNN, const.KNN))
+    P = np.ndarray((const.KNN, const.KNN))
     for i in range(const.KNN):
         for j in range(i, const.KNN):
-            G[i][j] = np.dot(v - mInp[args[i]], v - mInp[args[j]])
-            G[j][i] = G[i][j]
+            P[i][j] = np.dot(v - mInp[args[i]], v - mInp[args[j]])
+            P[j][i] = P[i][j]
 
-    P = G
     I = np.diag(np.ones(const.KNN))
     P = P + I
     q = np.zeros(const.KNN)
@@ -44,10 +43,9 @@ def learnLNSM(mInp, mOut):
     W = np.vstack(simAr)
 
     I = np.diag(np.ones(nObj))
-
     W = W * const.ALPHA
     I = I - W
-    I = pinv(I)
-    I = I * const.ALPHA
-    Y = np.matmul(I, mOut)
+    Y = pinv(I)
+    Y *= 1 - const.ALPHA
+    Y = np.matmul(Y, mOut)
     return Y
