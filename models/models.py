@@ -800,7 +800,7 @@ class LNSMModel(Model):
     def fit(self,input,output):
         self.inputTrain = input
         self.Y = lnsm.learnLNSM(input,output)
-        self.repred = output
+        #self.repred = output
 
     def predict(self, inputTest):
         preds = []
@@ -814,6 +814,7 @@ class LNSMModel(Model):
     def fitAndPredict(self, intpuTrain, outputTrain, inputTest):
 
         self.fit(intpuTrain,outputTrain)
+        self.repred = self.predict(intpuTrain)
         return self.predict(inputTest)
 
 

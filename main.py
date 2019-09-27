@@ -36,7 +36,7 @@ def runGB():
 
 def runKNN():
     wrapper = PredictorWrapper()
-    KLIST = [10 * i for i in range(1, 2)]
+    KLIST = [10 * i for i in range(1, 10)]
     for k in KLIST:
         const.KNN = k
         model = KNN()
@@ -112,7 +112,7 @@ def runDCN():
 def runLNSM():
     from models.models import LNSMModel
     wrapper = PredictorWrapper()
-    PLIST = [i * 60 for i in range(1,2)]
+    PLIST = [i * 10 for i in range(1,10)]
     for p in PLIST:
         const.KNN = p
         model = LNSMModel()
@@ -124,13 +124,13 @@ if __name__ == "__main__":
     parser = OptionParser()
 
     parser.add_option("-m", "--model", dest="modelName", type='string', default="LNSM",
-                      help="MODELNAME: KNN: k-nearest neighbor,\n"
+                      help="MODELNAME:\n"
+                           #"KNN: k-nearest neighbor,\n"
                            "LNSM: linear neighbor similarity,\n"
                            "CCA: canonical correlation analysis,\n"
                            "RF: random forest,\n"
                            "SVM: support vector machines,\n"
-                           "RD: random forest,\n"
-                           "GB: gradient boosting,\n"
+                           #"GB: gradient boosting,\n"
                            "LR: logistic regression,\n"
                            "MF: matrix factorization,\n"
                            "MLN: multilayer feedforward neural network,\n"
@@ -173,12 +173,12 @@ if __name__ == "__main__":
     modelName = options.modelName
     const.FEATURE_MODE = options.feature
 
-    if modelName == "KNN":
-        runKNN()
-    elif modelName == "LNSM":
+    # if modelName == "KNN":
+    #    runKNN()
+    if modelName == "LNSM":
         runLNSM()
-    elif modelName == "KGSIM":
-        runKGSIM()
+    # elif modelName == "KGSIM":
+    #    runKGSIM()
     elif modelName == "CCA":
         runCCA()
     elif modelName == "RF":
@@ -191,8 +191,8 @@ if __name__ == "__main__":
         runNeu()
     elif modelName == "GB":
         runGB()
-    elif modelName == "SCCA":
-         runSCCA()
+    # elif modelName == "SCCA":
+    #     runSCCA()
     elif modelName == "MF":
         runMF()
     elif modelName == "LR":
