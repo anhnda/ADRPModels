@@ -1,5 +1,4 @@
-# A comparison of machine learning models in adverse drug side effect prediction
-Duc Anh Nguyen, Canh Hao Nguyen and Hiroshi Mamitsuka
+# A comparison of machine learning models in adverse drug side effect prediction [1]
 ## Usage:
 
 - Create and activate a python environment using anaconda:
@@ -34,22 +33,11 @@ Duc Anh Nguyen, Canh Hao Nguyen and Hiroshi Mamitsuka
 
 ## Data
 
-All input data is available in "./data" folder:
-
-- Liu_Data: [1]
-- AEOLUS_Data: [2]
+All input data is available in the "./data" folder:
 
  
 ## Reference
-
-[1] Liu, Mei, Yonghui Wu, Yukun Chen, Jingchun Sun, Zhongming Zhao, Xue-wen Chen, Michael Edwin Matheny, and Hua Xu. "Large-scale prediction of adverse drug reactions using chemical, biological, and phenotypic properties of drugs." Journal of the American Medical Informatics Association 19, no. e1 (2012): e28-e35.
-
-[2] Banda JM, Evans L, Vanguri RS, Tatonetti NP, Ryan PB, Shah NH (2016) A curated and standardized adverse drug event resource to accelerate drug safety research. Scientific Data 3: 160026. https://doi.org/10.1038/sdata.2016.26
-<!--
-[3] Dey, Sanjoy, Heng Luo, Achille Fokoue, Jianying Hu, and Ping Zhang. "Predicting adverse drug reactions through interpretable deep learning framework." BMC bioinformatics 19, no. 21 (2018): 476.
--->
-
-
+[1] Nguyen, Duc Anh, Canh Hao Nguyen, and Hiroshi Mamitsuka. "A survey on adverse drug reaction studies: data, tasks and machine learning methods." Briefings in Bioinformatics (2019).
  
 
 
